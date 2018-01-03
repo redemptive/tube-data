@@ -1,0 +1,15 @@
+{
+  "name": "tfl-data",
+  "version": "0.0.1",
+  "description": "tfl data app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ewan Forbes",
+  "license": "ISC",
+  "dependencies": {
+    "http": "0.0.0",
+    "request": "^2.83.0"
+  }
+}
