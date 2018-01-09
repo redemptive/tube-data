@@ -1,9 +1,10 @@
 const request = require("request");
 const http = require("http");
+const cheerio = require("cheerio");
+const fs = require("fs");
 const port = 80;
 let tubeData;
 let dlrData;
-let victoriaData;
 let routes = [];
 
 async function getAllData() {
@@ -13,8 +14,6 @@ async function getAllData() {
 	dlrData = await getData("https://api.tfl.gov.uk/Line/Mode/dlr/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb");
 	dlrData = JSON.parse(dlrData);
 	console.log("Got DLR data");
-	victoriaData = await getData("https://api.tfl.gov.uk/Line/victoria/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=43f241fe9e184b6aa7de7b615b28a6cb&app_id=deddaca2");
-	victoriaData = JSON.parse(victoriaData);
 	routes = [];
 	for (var key in tubeData) {
 		let data = await getData("https://api.tfl.gov.uk/Line/" + tubeData[key].id + "/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=43f241fe9e184b6aa7de7b615b28a6cb&app_id=deddaca2");
@@ -23,8 +22,10 @@ async function getAllData() {
 		for (var val in data.stopPointSequences[0].stopPoint) {
 			routes[key].push(JSON.stringify(data.stopPointSequences[0].stopPoint[val].name));
 		}
+		console.log("Got " + tubeData[key].name + " line route");
 	}
-	console.log(routes);
+	buildHtml();
+	startServer();
 }
 
 function getData(site) {
@@ -38,24 +39,60 @@ function getData(site) {
 	});
 }
 
+function writeToFile(data, fileName) {
+	return new Promise((resolve, reject) => {
+		fs.writeFile(fileName, data, (err) => {
+			if (err) {
+				console.log(err);
+				reject("Problem writing file");
+			} else {
+				resolve("Completed");
+			}
+		});
+	});
+}
+
+function buildHtml() {
+	return new Promise((resolve, reject) => {
+		var $ = cheerio.load(fs.readFileSync("./index.html","utf-8"));
+		for (var val in tubeData) {
+			if (tubeData.hasOwnProperty(val)) {
+				$("#tubeData" + val).empty();
+				$("#tubeData" + val).append("<h2>" + tubeData[val].name + ": </h2>" + JSON.stringify(tubeData[val].lineStatuses[0].statusSeverityDescription));
+				$("#tubeData" + val).append("<button class='routeToggler'>Show Route</button>");
+				$("#tubeData" + val).append("<br><div class='routeDiv'>" + routes[val].toString().replace(/['"]+/g, '').replace(/[',]+/g, '<br>') + "</div>");
+			}
+		}
+		$("#dlrData").empty();
+		$("#dlrData").append("<h2>Dlr</h2>")
+		$("#dlrData").append(JSON.stringify(dlrData[0].lineStatuses[0].statusSeverityDescription));
+		writeToFile($.html(), "./index.html");
+		console.log("HTML file updated")
+	});
+}
+
+function startServer() {
+	http.createServer(function (req, res) {
+		console.log("Request recieved for " + req.url);
+		switch(req.url) {
+			case "/script.js":
+				res.writeHead(200, {'Content-Type': 'text/javascript'});
+				res.write(fs.readFileSync("./script.js","utf-8"));
+				res.end();
+				break;
+			case "/index.css":
+				res.writeHead(200, {'Content-Type': 'text/css'});
+				res.write(fs.readFileSync("./index.css","utf-8"));
+				res.end();
+				break;
+			default:
+				res.writeHead(200, {'Content-Type': 'text/html'});
+				res.write(fs.readFileSync("./index.html","utf-8"));
+				res.end();
+		}
+		console.log("Reply sent");
+	}).listen(port);
+	console.log("Listening on port: " + port);
+}
 
 getAllData();
-let timeout = setInterval(getAllData, 60000);
-
-http.createServer(function (req, res) {
-	console.log("Request recieved");
-	res.writeHead(200, {'Content-Type': 'text/html'});
-	res.write("<h1>Tube Line Status</h1>")
-	for (var key in tubeData) {
-		if (tubeData.hasOwnProperty(key)) {
-			res.write("<h2>" + tubeData[key].name + ": </h2>" + JSON.stringify(tubeData[key].lineStatuses[0].statusSeverityDescription));
-			res.write("<br>" + routes[key].toString());
-		}
-	}
-	res.write("<h1>DLR Line Status</h1>");
-	res.write(JSON.stringify(dlrData[0].lineStatuses[0].statusSeverityDescription));
-	res.end();
-	console.log("Reply sent");
-}).listen(port);
-
-console.log("Listening on port: " + port);
