@@ -1,3 +1,7 @@
+.row {
+	padding: 20px;
+}
+
 .tubeData {
 	border: 1px solid black;
 }

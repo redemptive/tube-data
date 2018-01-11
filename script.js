@@ -1,7 +1,7 @@
 $(document).ready(() => {
 	$(".routeDiv").hide();
 
-	$(".routeToggler").click(() => {
-		alert($(this).attr("id"));
+	$(".routeToggler").on("click", () => {
+		alert($(this).next().attr("class"));
 	});
 });
