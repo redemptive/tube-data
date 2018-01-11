@@ -1,6 +1,8 @@
 const request = require("request");
 const http = require("http");
 const cheerio = require("cheerio");
+const express = require("express");
+const app = express();
 const fs = require("fs");
 const port = 80;
 let tubeData;
@@ -72,27 +74,25 @@ function buildHtml() {
 }
 
 function startServer() {
-	http.createServer(function (req, res) {
+	app.get("/", (req, res) => {
 		console.log("Request recieved for " + req.url);
-		switch(req.url) {
-			case "/script.js":
-				res.writeHead(200, {'Content-Type': 'text/javascript'});
-				res.write(fs.readFileSync("./script.js","utf-8"));
-				res.end();
-				break;
-			case "/index.css":
-				res.writeHead(200, {'Content-Type': 'text/css'});
-				res.write(fs.readFileSync("./index.css","utf-8"));
-				res.end();
-				break;
-			default:
-				res.writeHead(200, {'Content-Type': 'text/html'});
-				res.write(fs.readFileSync("./index.html","utf-8"));
-				res.end();
-		}
-		console.log("Reply sent");
-	}).listen(port);
-	console.log("Listening on port: " + port);
+		res.write(fs.readFileSync("./index.html","utf-8"));
+		res.end();
+		console.log("Sent " + req.url);
+	});
+	app.get("/index.css", (req, res) => {
+		res.writeHead(200, {'Content-Type': 'text/css'});
+		res.write(fs.readFileSync("./index.css","utf-8"));
+		res.end();
+	});
+	app.get("/script.js", (req,res) => {
+		res.writeHead(200, {'Content-Type': 'text/javascript'});
+		res.write(fs.readFileSync("./script.js","utf-8"));
+ 		res.end();
+	});
+	app.listen(port, () => {
+		console.log("Server started on port " + port); 
+	});
 }
 
 getAllData();
