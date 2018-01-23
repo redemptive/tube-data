@@ -1,9 +1,9 @@
 const request = require("request");
 const http = require("http");
-const cheerio = require("cheerio");
 const express = require("express");
 const app = express();
 const fs = require("fs");
+const ejs = require("ejs");
 const port = 3000;
 let tubeData;
 let dlrData;
@@ -26,7 +26,7 @@ async function getAllData() {
 		}
 		console.log("Got " + tubeData[key].name + " line route");
 	}
-	buildHtml();
+	app.set("view engine", "ejs");
 	startServer();
 }
 
@@ -54,41 +54,28 @@ function writeToFile(data, fileName) {
 	});
 }
 
-function buildHtml() {
-	return new Promise((resolve, reject) => {
-		var $ = cheerio.load(fs.readFileSync("./index.html","utf-8"));
-		for (var val in tubeData) {
-			if (tubeData.hasOwnProperty(val)) {
-				$("#tubeData" + val).empty();
-				$("#tubeData" + val).append("<h2>" + tubeData[val].name + ": </h2>" + JSON.stringify(tubeData[val].lineStatuses[0].statusSeverityDescription));
-				$("#tubeData" + val).append("<button class='routeToggler'>Show Route</button>");
-				$("#tubeData" + val).append("<br><div class='routeDiv'>" + routes[val].toString().replace(/['"]+/g, '').replace(/[',]+/g, '<br>') + "</div>");
-			}
-		}
-		$("#dlrData").empty();
-		$("#dlrData").append("<h2>Dlr</h2>")
-		$("#dlrData").append(JSON.stringify(dlrData[0].lineStatuses[0].statusSeverityDescription));
-		writeToFile($.html(), "./index.html");
-		console.log("HTML file updated")
-	});
-}
-
 function startServer() {
 	app.get("/", (req, res) => {
 		console.log("Request recieved for " + req.url);
-		res.write(fs.readFileSync("./index.html","utf-8"));
-		res.end();
+		res.render("index", {
+			tubeData: tubeData,
+			dlrData: dlrData
+		});
 		console.log("Sent " + req.url);
 	});
 	app.get("/index.css", (req, res) => {
+		console.log("Request recieved for " + req.url);
 		res.writeHead(200, {'Content-Type': 'text/css'});
 		res.write(fs.readFileSync("./index.css","utf-8"));
 		res.end();
+		console.log("Sent " + req.url);
 	});
 	app.get("/script.js", (req,res) => {
+		console.log("Request recieved for " + req.url);
 		res.writeHead(200, {'Content-Type': 'text/javascript'});
 		res.write(fs.readFileSync("./script.js","utf-8"));
  		res.end();
+ 		console.log("Sent " + req.url);
 	});
 	app.listen(port, () => {
 		console.log("Server started on port " + port); 

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hello</title>
+	<link rel="stylesheet" type="text/css" href="/index.css">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="/script.js"></script>
+</head>
+<body>
+	<% for (var i in tubeData) { %>
+		<div id="tube-data<%= i %>">
+			<h2><%= tubeData[i].name %></h2><%= JSON.stringify(tubeData[i].lineStatuses[0].statusSeverityDescription) %>
+		</div>
+	<% } %>
+</body>
+</html>
