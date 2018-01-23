@@ -4,7 +4,7 @@ const cheerio = require("cheerio");
 const express = require("express");
 const app = express();
 const fs = require("fs");
-const port = 80;
+const port = 3000;
 let tubeData;
 let dlrData;
 let routes = [];
@@ -12,7 +12,7 @@ let routes = [];
 async function getAllData() {
 	tubeData = await getData("https://api.tfl.gov.uk/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb");
 	tubeData = JSON.parse(tubeData);
-	console.log("Got tube data");
+	console.log("Got Tube data");
 	dlrData = await getData("https://api.tfl.gov.uk/Line/Mode/dlr/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb");
 	dlrData = JSON.parse(dlrData);
 	console.log("Got DLR data");
