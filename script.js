@@ -1,7 +1,7 @@
 $(document).ready(() => {
-	$(".routeDiv").hide();
+	$(".route-div").hide();
 
-	$(".routeToggler").on("click", function() {
-		$(this).nextAll(".routeDiv").toggle();
+	$(".route-toggler").on("click", function() {
+		$(this).nextAll(".route-div").toggle();
 	});
 });

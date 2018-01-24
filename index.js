@@ -5,6 +5,8 @@ const app = express();
 const fs = require("fs");
 const ejs = require("ejs");
 const port = 3000;
+let interval;
+let serverRunning = false;
 let tubeData;
 let dlrData;
 let routes = [];
@@ -26,8 +28,11 @@ async function getAllData() {
 		}
 		console.log("Got " + tubeData[key].name + " line route");
 	}
-	app.set("view engine", "ejs");
-	startServer();
+	if (!serverRunning) {
+		app.set("view engine", "ejs");
+		serverRunning = true;
+		startServer();
+	}
 }
 
 function getData(site) {
@@ -59,7 +64,8 @@ function startServer() {
 		console.log("Request recieved for " + req.url);
 		res.render("index", {
 			tubeData: tubeData,
-			dlrData: dlrData
+			dlrData: dlrData,
+			routes: routes
 		});
 		console.log("Sent " + req.url);
 	});
@@ -83,3 +89,4 @@ function startServer() {
 }
 
 getAllData();
+interval = setInterval(getAllData, 60000);
