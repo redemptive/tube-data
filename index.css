@@ -10,6 +10,14 @@
 	color: green;
 }
 
+.minor-delays {
+	color: orange;
+}
+
+.severe-delays {
+	color: red;
+}
+
 #tube-data0 h2{
 	color: #B36305;
 }
