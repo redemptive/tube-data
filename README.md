@@ -7,9 +7,16 @@ A node.js program which grabs data from the tfl unified api and displays it on a
 
 ## Technologies
 - node.js
-### Dependancies
+
+## Dependancies
 - http
+- fs
 - request
+- ejs
+- express
 
 ## Installation and Usage
-Clone the repository and use node on the command line to open index.js and navigate in a browser to localhost
+- Clone the repository
+- run npm install in the command line
+- Run node index to run the server
+- Navigate to localhost:3000
