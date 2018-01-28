@@ -2,36 +2,29 @@
 <html>
 <head>
 	<title>Tube App</title>
-	<link rel="stylesheet" type="text/css" href="/index.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-	<script src="/script.js"></script>
+	<% include partials/frameworks %>
 </head>
 <body>
 	<% include partials/nav %>
 	<div class="container-fluid">
+		<h1>Tube Lines</h1>
 		<% for (var i in tubeData) { %>
-			<% if (i % 2 == 0) {%>
+			<% if (i % 3 == 0) {%>
 				<div class="row">
 			<% } %>
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<div id="tube-data<%= i %>">
 					<h2><%= tubeData[i].name %></h2><div class="<%= tubeData[i].lineStatuses[0].statusSeverityDescription.toLowerCase().replace(" ","-") %>"><%= tubeData[i].lineStatuses[0].statusSeverityDescription %></div>
-					<button class="btn route-toggler">Show Route</button>
-					<div class="route-div">
-						<%= routes[i].toString().replace(/"/g," "); %>
-					</div>
 				</div>
 			</div>
-			<% if (i % 2 != 0 || i == tubeData.length) { %>
+			<% if (i % 3 == 2 || i == tubeData.length) { %>
 				</div>
 			<% } %>
 		<% } %>
-		<div id="dlr-data">
-			<h2><%= dlrData[0].name %></h2><div class="<%= dlrData[0].lineStatuses[0].statusSeverityDescription.toLowerCase().replace(" ", "-") %>"><%= dlrData[0].lineStatuses[0].statusSeverityDescription; %></div>
+		<div class="col-md-4">
+			<div id="dlr-data">
+				<h2><%= dlrData[0].name %></h2><div class="<%= dlrData[0].lineStatuses[0].statusSeverityDescription.toLowerCase().replace(" ", "-") %>"><%= dlrData[0].lineStatuses[0].statusSeverityDescription; %></div>
+			</div>
 		</div>
 	</div>
 </body>

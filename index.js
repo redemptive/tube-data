@@ -12,6 +12,11 @@ let dlrData;
 let routes = [];
 
 async function getAllData() {
+	if (!serverRunning) {
+		console.log("*** Getting data from tube API ***");
+	} else {
+		console.log("*** Refreshing data from tube API ***");
+	}
 	tubeData = await getData("https://api.tfl.gov.uk/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb");
 	tubeData = JSON.parse(tubeData);
 	console.log("Got Tube data");
@@ -29,6 +34,7 @@ async function getAllData() {
 		console.log("Got " + tubeData[key].name + " line route");
 	}
 	if (!serverRunning) {
+		console.log("*** Starting server ***")
 		app.set("view engine", "ejs");
 		serverRunning = true;
 		startServer();
@@ -69,15 +75,24 @@ function startServer() {
 		});
 		console.log("Sent " + req.url);
 	});
+	app.get("/routes", (req, res) => {
+		console.log("Request recieved for " + req.url + " from " + req.connection.remoteAddress);
+		res.render("routes", {
+			tubeData: tubeData,
+			dlrData: dlrData,
+			routes: routes
+		});
+		console.log("Sent " + req.url);
+	});
 	app.get("/index.css", (req, res) => {
-		console.log("Request recieved for " + req.url);
+		console.log("Request recieved for " + req.url + " from " + req.connection.remoteAddress);
 		res.writeHead(200, {'Content-Type': 'text/css'});
 		res.write(fs.readFileSync("./index.css","utf-8"));
 		res.end();
 		console.log("Sent " + req.url);
 	});
 	app.get("/script.js", (req,res) => {
-		console.log("Request recieved for " + req.url);
+		console.log("Request recieved for " + req.url + " from " + req.connection.remoteAddress);
 		res.writeHead(200, {'Content-Type': 'text/javascript'});
 		res.write(fs.readFileSync("./script.js","utf-8"));
  		res.end();

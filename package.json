@@ -9,7 +9,6 @@
   "author": "Ewan Forbes",
   "license": "ISC",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "fs": "0.0.1-security",

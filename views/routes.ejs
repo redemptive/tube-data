@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Routes</title>
+	<% include partials/frameworks %>
+</head>
+<body>
+	<% include partials/nav %>
+	<div class="container-fluid">
+		<h1>Routes</h1>
+		<% for (var i in tubeData) { %>
+			<div class="row">
+				<div id="tube-data<%= i %>" class="col-md-12">
+					<h2><%= tubeData[i].name %></h2>
+					<div class="route-div">
+						<%= routes[i].toString().replace(/"/g,""); %>
+					</div>
+				</div>
+			</div>
+		<% } %>
+	</div>
+</body>
+</html>

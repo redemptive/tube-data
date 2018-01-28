@@ -14,7 +14,7 @@
 	color: orange;
 }
 
-.severe-delays {
+.severe-delays, .part-closure, .service-closed {
 	color: red;
 }
 
