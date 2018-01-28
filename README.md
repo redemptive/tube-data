@@ -6,7 +6,12 @@
 A node.js program which grabs data from the tfl unified api and displays it on a localhost page
 
 ## Technologies
-- node.js
+- Javascript
+  - node.js
+  - JQuery
+- HTML
+- CSS
+  - Bootstrap 4
 
 ## Dependancies
 - http
@@ -17,6 +22,6 @@ A node.js program which grabs data from the tfl unified api and displays it on a
 
 ## Installation and Usage
 - Clone the repository
-- run npm install in the command line
+- Run npm install in the command line
 - Run node index to run the server
 - Navigate to localhost:3000
