@@ -16,6 +16,7 @@ let routes = [];
 
 // App configuration
 app.use(express.static("static"));
+app.set("view engine", "ejs");
 
 async function getAllData() {
 	if (!serverRunning) {
@@ -23,12 +24,26 @@ async function getAllData() {
 	} else {
 		console.log("*** Refreshing data from tube API ***");
 	}
-	tubeData = await getData("https://api.tfl.gov.uk/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb");
-	tubeData = JSON.parse(tubeData);
-	console.log("Got Tube data");
-	dlrData = await getData("https://api.tfl.gov.uk/Line/Mode/dlr/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb");
-	dlrData = JSON.parse(dlrData);
-	console.log("Got DLR data");
+	await getData("https://api.tfl.gov.uk/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb").then((response) => {
+		tubeData = JSON.parse(response);
+		console.log("Got Tube data");
+	}, (error) => {
+		if (!tubeData) {
+			throw `Could not get tube data: ${error}`
+		} else {
+			console.log(`Could not get tube data, will keep using the last one: ${error}`);
+		}
+	});
+	await getData("https://api.tfl.gov.uk/Line/Mode/dlr/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb").then((response) => {
+		dlrData = JSON.parse(response);
+		console.log("Got DLR data");
+	}, (error) => {
+		if (!dlrData) {
+			throw `Could not get tube data: ${error}`
+		} else {
+			console.log(`Could not get tube data, will keep using the last one: ${error}`);
+		}
+	});
 	routes = [];
 	for (var key in tubeData) {
 		let data = await getData("https://api.tfl.gov.uk/Line/" + tubeData[key].id + "/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=43f241fe9e184b6aa7de7b615b28a6cb&app_id=deddaca2");
@@ -40,8 +55,7 @@ async function getAllData() {
 		console.log("Got " + tubeData[key].name + " line route");
 	}
 	if (!serverRunning) {
-		console.log("*** Starting server ***")
-		app.set("view engine", "ejs");
+		console.log("*** Starting server ***");
 		serverRunning = true;
 		startServer();
 	}
