@@ -1,3 +1,4 @@
+// Imports
 const request = require("request");
 const http = require("http");
 const express = require("express");
@@ -5,11 +6,16 @@ const app = express();
 const fs = require("fs");
 const ejs = require("ejs");
 const port = 3000;
-let interval;
+
+// Variables
+let refreshInterval = 60000; // Milliseconds
 let serverRunning = false;
 let tubeData;
 let dlrData;
 let routes = [];
+
+// App configuration
+app.use(express.static("static"));
 
 async function getAllData() {
 	if (!serverRunning) {
@@ -84,24 +90,10 @@ function startServer() {
 		});
 		console.log("Sent " + req.url);
 	});
-	app.get("/index.css", (req, res) => {
-		console.log("Request recieved for " + req.url + " from " + req.connection.remoteAddress);
-		res.writeHead(200, {'Content-Type': 'text/css'});
-		res.write(fs.readFileSync("./index.css","utf-8"));
-		res.end();
-		console.log("Sent " + req.url);
-	});
-	app.get("/script.js", (req,res) => {
-		console.log("Request recieved for " + req.url + " from " + req.connection.remoteAddress);
-		res.writeHead(200, {'Content-Type': 'text/javascript'});
-		res.write(fs.readFileSync("./script.js","utf-8"));
- 		res.end();
- 		console.log("Sent " + req.url);
-	});
 	app.listen(port, () => {
 		console.log("Server started on port " + port); 
 	});
 }
 
 getAllData();
-interval = setInterval(getAllData, 60000);
+interval = setInterval(getAllData, refreshInterval);
