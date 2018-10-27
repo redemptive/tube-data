@@ -26,7 +26,7 @@ async function getAllData() {
 	} else {
 		console.log("*** Refreshing data from tube API ***");
 	}
-	await getData(`${tflApiRoot}/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=${tflKey}}`).then((response) => {
+	await getData(`${tflApiRoot}/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=${tflKey}`).then((response) => {
 		tubeData = JSON.parse(response);
 		console.log("Got Tube data");
 	}, (error) => {
@@ -48,13 +48,16 @@ async function getAllData() {
 	});
 	routes = [];
 	for (let key in tubeData) {
-		let data = await getData(`${tflApiRoot}/Line/${tubeData[key].id}/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=${tflKey}&app_id=deddaca2`);
-		data = JSON.parse(data);
-		routes.push([]);
-		for (var val in data.stopPointSequences[0].stopPoint) {
-			routes[key].push(JSON.stringify(data.stopPointSequences[0].stopPoint[val].name));
-		}
-		console.log(`Got ${tubeData[key].name} line route`);
+		await getData(`${tflApiRoot}/Line/${tubeData[key].id}/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=${tflKey}&app_id=deddaca2`).then((response) => {
+			let data = JSON.parse(response);
+			routes.push([]);
+			for (var val in data.stopPointSequences[0].stopPoint) {
+				routes[key].push(JSON.stringify(data.stopPointSequences[0].stopPoint[val].name));
+			}
+			console.log(`Got ${tubeData[key].name} line route`);
+		}, (error) => {
+			console.log(`Could not get ${tubeData[key].name} line route`);
+		});
 	}
 	if (!serverRunning) {
 		console.log("*** Starting server ***");
