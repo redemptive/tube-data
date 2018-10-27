@@ -31,7 +31,8 @@ async function getAllData() {
 		console.log("Got Tube data");
 	}, (error) => {
 		if (!tubeData) {
-			throw `Could not get tube data: ${error}`
+			console.log(`Could not get tube data on first run, status code: ${error}\nExiting...`);
+			process.exit();
 		} else {
 			console.log(`Could not get tube data, will keep using the last one: ${error}`);
 		}
@@ -41,7 +42,8 @@ async function getAllData() {
 		console.log("Got DLR data");
 	}, (error) => {
 		if (!dlrData) {
-			throw `Could not get tube data: ${error}`
+			console.log(`Could not get dlr data on first run, status code: ${error}\nExiting...`);
+			process.exit();
 		} else {
 			console.log(`Could not get dlr data, will keep using the last one: ${error}`);
 		}
@@ -71,8 +73,8 @@ function getData(site) {
 		request({
 			uri: site,
 		}, function(error, response, body) {
-			if (error) {
-				reject(error);
+			if (error || response.statusCode !== 200) {
+				reject(response.statusCode);
 			}
 			resolve(body);
 		});
@@ -87,7 +89,7 @@ function startServer() {
 			dlrData: dlrData,
 			routes: routes
 		});
-		console.log("Sent " + req.url);
+		console.log(`Sent ${req.url}`);
 	});
 	app.get("/routes", (req, res) => {
 		console.log(`Request recieved for ${req.url} from ${req.connection.remoteAddress}`);
