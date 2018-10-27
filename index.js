@@ -66,21 +66,10 @@ function getData(site) {
 		request({
 			uri: site,
 		}, function(error, response, body) {
-			data = body;
-			resolve(data);
-		});
-	});
-}
-
-function writeToFile(data, fileName) {
-	return new Promise((resolve, reject) => {
-		fs.writeFile(fileName, data, (err) => {
-			if (err) {
-				console.log(err);
-				reject("Problem writing file");
-			} else {
-				resolve("Completed");
+			if (error) {
+				reject(error);
 			}
+			resolve(body);
 		});
 	});
 }
