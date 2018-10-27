@@ -8,7 +8,9 @@ const ejs = require("ejs");
 const port = 3000;
 
 // Variables
-let refreshInterval = 60000; // Milliseconds
+const tflApiRoot = "https://api.tfl.gov.uk"
+const tflKey = "43f241fe9e184b6aa7de7b615b28a6cb"
+let refreshInterval = 120000; // Milliseconds
 let serverRunning = false;
 let tubeData;
 let dlrData;
@@ -24,7 +26,7 @@ async function getAllData() {
 	} else {
 		console.log("*** Refreshing data from tube API ***");
 	}
-	await getData("https://api.tfl.gov.uk/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb").then((response) => {
+	await getData(`${tflApiRoot}/Line/Mode/tube/Status?detail=true&app_id=deddaca2&app_key=${tflKey}}`).then((response) => {
 		tubeData = JSON.parse(response);
 		console.log("Got Tube data");
 	}, (error) => {
@@ -34,25 +36,25 @@ async function getAllData() {
 			console.log(`Could not get tube data, will keep using the last one: ${error}`);
 		}
 	});
-	await getData("https://api.tfl.gov.uk/Line/Mode/dlr/Status?detail=true&app_id=deddaca2&app_key=43f241fe9e184b6aa7de7b615b28a6cb").then((response) => {
+	await getData(`${tflApiRoot}/Line/Mode/dlr/Status?detail=true&app_id=deddaca2&app_key=${tflKey}`).then((response) => {
 		dlrData = JSON.parse(response);
 		console.log("Got DLR data");
 	}, (error) => {
 		if (!dlrData) {
 			throw `Could not get tube data: ${error}`
 		} else {
-			console.log(`Could not get tube data, will keep using the last one: ${error}`);
+			console.log(`Could not get dlr data, will keep using the last one: ${error}`);
 		}
 	});
 	routes = [];
-	for (var key in tubeData) {
-		let data = await getData("https://api.tfl.gov.uk/Line/" + tubeData[key].id + "/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=43f241fe9e184b6aa7de7b615b28a6cb&app_id=deddaca2");
+	for (let key in tubeData) {
+		let data = await getData(`${tflApiRoot}/Line/${tubeData[key].id}/Route/Sequence/inbound?serviceTypes=Regular&excludeCrowding=true&app_key=${tflKey}&app_id=deddaca2`);
 		data = JSON.parse(data);
 		routes.push([]);
 		for (var val in data.stopPointSequences[0].stopPoint) {
 			routes[key].push(JSON.stringify(data.stopPointSequences[0].stopPoint[val].name));
 		}
-		console.log("Got " + tubeData[key].name + " line route");
+		console.log(`Got ${tubeData[key].name} line route`);
 	}
 	if (!serverRunning) {
 		console.log("*** Starting server ***");
@@ -76,7 +78,7 @@ function getData(site) {
 
 function startServer() {
 	app.get("/", (req, res) => {
-		console.log("Request recieved for " + req.url);
+		console.log(`Request recieved for ${req.url}`);
 		res.render("index", {
 			tubeData: tubeData,
 			dlrData: dlrData,
@@ -85,16 +87,16 @@ function startServer() {
 		console.log("Sent " + req.url);
 	});
 	app.get("/routes", (req, res) => {
-		console.log("Request recieved for " + req.url + " from " + req.connection.remoteAddress);
+		console.log(`Request recieved for ${req.url} from ${req.connection.remoteAddress}`);
 		res.render("routes", {
 			tubeData: tubeData,
 			dlrData: dlrData,
 			routes: routes
 		});
-		console.log("Sent " + req.url);
+		console.log(`Sent ${req.url}`);
 	});
 	app.listen(port, () => {
-		console.log("Server started on port " + port); 
+		console.log(`Server started on port ${port}`); 
 	});
 }
 
