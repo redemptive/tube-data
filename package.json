@@ -1,18 +1,29 @@
 {
   "name": "tfl-data",
   "version": "0.0.1",
-  "description": "tfl data app",
-  "main": "index.js",
+  "description": "Static Svelte site for live TfL Tube and DLR status data.",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+    "lint": "eslint .",
+    "verify": "npm run lint && npm run check",
+    "test": "npm run verify"
   },
   "author": "Ewan Forbes",
   "license": "ISC",
-  "dependencies": {
-    "ejs": "^2.5.7",
-    "express": "^4.16.2",
-    "fs": "0.0.1-security",
-    "http": "0.0.0",
-    "request": "^2.83.0"
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.21.1",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.28.0",
+    "eslint-plugin-svelte": "^3.9.1",
+    "globals": "^16.2.0",
+    "svelte": "^5.34.1",
+    "svelte-check": "^4.2.1",
+    "vite": "^8.0.0"
   }
 }

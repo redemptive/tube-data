@@ -1,27 +1,37 @@
-## Title
-
 # tube-data
 
 ## Description
-A node.js program which grabs data from the tfl unified api and displays it on a localhost page
+A static SvelteKit site that fetches live Tube and DLR service information from the TfL Unified API in the browser.
 
 ## Technologies
-- Javascript
-  - node.js
-  - JQuery
-- HTML
+- SvelteKit
+- Vite
+- JavaScript
 - CSS
-  - Bootstrap 4
+- ESLint
 
-## Dependancies
-- http
-- fs
-- request
-- ejs
-- express
+## Local development
+```sh
+npm install
+npm run dev
+```
 
-## Installation and Usage
-- Clone the repository
-- Run npm install in the command line
-- Run node index to run the server
-- Navigate to localhost:3000
+The dev server prints the local URL, usually `http://localhost:5173/`.
+
+## Quality checks
+```sh
+npm run lint
+npm run check
+npm run build
+```
+
+`npm test` runs the lint and Svelte checks.
+
+## Deployment
+The site deploys to GitHub Pages with GitHub Actions on pushes to `main`.
+
+Before the first deployment, set the repository Pages source to **GitHub Actions** in the GitHub repository settings. The production site is expected to be published at:
+
+```text
+https://redemptive.github.io/tube-data/
+```
