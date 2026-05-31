@@ -12,7 +12,6 @@
 	let loading = false;
 	let error = '';
 
-	$: status = line.lineStatuses?.[0]?.statusSeverityDescription ?? 'Unknown';
 	$: background = getLineColour(line.id);
 	$: foreground = getReadableTextColour(line.id);
 	$: panelId = `route-${line.id}`;
@@ -28,7 +27,8 @@
 		error = '';
 
 		try {
-			stops = await fetchRouteStops(line.id);
+			const response = await fetchRouteStops(line.id);
+			stops = response.data;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Route stops could not be loaded.';
 		} finally {
@@ -41,7 +41,7 @@
 	<div class="route-summary">
 		<div>
 			<h2>{line.name}</h2>
-			<StatusBadge {status} />
+			<StatusBadge status={line.status} />
 		</div>
 		<button type="button" aria-expanded={expanded} aria-controls={panelId} on:click={toggle}>
 			{expanded ? 'Hide stops' : 'Show stops'}

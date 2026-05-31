@@ -9,23 +9,33 @@
 	let error = '';
 	/** @type {Date | null} */
 	let lastUpdated = null;
+	let showingCachedData = false;
 
 	onMount(() => {
 		loadStatuses();
 	});
 
-	async function loadStatuses() {
+	/**
+	 * @param {{ force?: boolean }} [options]
+	 */
+	async function loadStatuses(options = {}) {
 		loading = true;
 		error = '';
 
 		try {
-			lines = await fetchLineStatuses();
-			lastUpdated = new Date();
+			const response = await fetchLineStatuses(options);
+			lines = response.data;
+			lastUpdated = response.fetchedAt;
+			showingCachedData = response.fromCache;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'TfL status data could not be loaded.';
 		} finally {
 			loading = false;
 		}
+	}
+
+	function refreshStatuses() {
+		loadStatuses({ force: true });
 	}
 </script>
 
@@ -38,13 +48,18 @@
 		<p class="eyebrow">Live service status</p>
 		<h1 id="status-title">Tube and DLR lines</h1>
 	</div>
-	<button class="secondary-action" type="button" on:click={loadStatuses} disabled={loading}>
+	<button class="secondary-action" type="button" on:click={refreshStatuses} disabled={loading}>
 		{loading ? 'Refreshing' : 'Refresh'}
 	</button>
 </section>
 
 {#if lastUpdated}
-	<p class="timestamp">Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+	<p class="timestamp">
+		Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+		{#if showingCachedData}
+			<span>cached</span>
+		{/if}
+	</p>
 {/if}
 
 {#if loading && lines.length === 0}
@@ -52,7 +67,7 @@
 {:else if error}
 	<div class="state-panel error" role="alert">
 		<p>{error}</p>
-		<button type="button" on:click={loadStatuses}>Try again</button>
+		<button type="button" on:click={refreshStatuses}>Try again</button>
 	</div>
 {:else if lines.length === 0}
 	<div class="state-panel">No line status data is available right now.</div>
